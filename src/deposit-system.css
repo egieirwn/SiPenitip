@@ -496,6 +496,71 @@
 .form-input-inline { padding: 0.375rem 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.8125rem; color: var(--color-text-main); background: var(--color-bg-surface); outline: none; }
 .form-input-inline:focus { border-color: var(--color-primary); }
 
+.item-photo-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.item-photo-input {
+  padding: 0.375rem;
+  cursor: pointer;
+}
+
+.item-photo-input::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-light, #DBEAFE);
+  color: var(--color-primary, #2563EB);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.item-photo-input:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.item-photo-hint,
+.item-photo-uploading {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.item-photo-uploading {
+  color: var(--color-primary);
+}
+
+.item-photo-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 160px;
+  max-height: 300px;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle, #F8FAFC);
+  box-sizing: border-box;
+}
+
+.item-photo-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
 .form-footer {
   padding: 1rem 1.25rem;
   border-top: 1px solid var(--color-border);
@@ -934,4 +999,3 @@
   max-width: 60%;
   line-height: 1.3;
 }
-

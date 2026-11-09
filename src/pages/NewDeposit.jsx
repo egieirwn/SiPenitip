@@ -116,8 +116,8 @@ export default function NewDeposit() {
     }
     setUploadingIdx(idx);
     try {
-      const ext = file.name.split('.').pop();
-      const path = `deposit-items/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { data, error } = await supabase.storage
         .from('deposit-items')
         .upload(path, file, { cacheControl: '3600', upsert: false });
@@ -459,20 +459,23 @@ export default function NewDeposit() {
                   </div>
                   <div className="form-group">
                     <label className="form-label"><Camera size={14} /> Foto Barang</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="form-input"
-                      onChange={e => handlePhotoUpload(idx, e.target.files[0])}
-                      disabled={uploadingIdx === idx}
-                    />
-                    {uploadingIdx === idx && <p style={{ fontSize: '0.75rem', color: 'var(--color-primary)', marginTop: '0.25rem' }}>Mengupload foto...</p>}
-                    {item.photo_url && (
-                      <img
-                        src={item.photo_url}
-                        alt="Preview"
-                        style={{ marginTop: '0.5rem', maxHeight: '100px', borderRadius: 'var(--radius-sm)', objectFit: 'cover' }}
+                    <div className="item-photo-field">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="form-input item-photo-input"
+                        onChange={e => handlePhotoUpload(idx, e.target.files[0])}
+                        disabled={uploadingIdx === idx}
                       />
+                      <span className="item-photo-hint">Format gambar JPG, PNG, atau lainnya.</span>
+                      {uploadingIdx === idx && (
+                        <p className="item-photo-uploading" role="status">Mengupload foto...</p>
+                      )}
+                    </div>
+                    {item.photo_url && (
+                      <div className="item-photo-preview">
+                        <img src={item.photo_url} alt={`Pratinjau foto ${item.name || 'barang'}`} />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -559,4 +562,3 @@ export default function NewDeposit() {
     </div>
   );
 }
-

@@ -502,6 +502,16 @@ ALTER TABLE public.deposit_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pickup_authorizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transaction_logs ENABLE ROW LEVEL SECURITY;
 
+-- Foto barang menggunakan URL publik, tetapi hanya petugas yang boleh mengunggahnya.
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('deposit-items', 'deposit-items', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Staff can upload deposit item photos" ON storage.objects;
+CREATE POLICY "Staff can upload deposit item photos"
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'deposit-items' AND public.is_staff());
+
 -- profiles
 DROP POLICY IF EXISTS "Profiles are viewable by authenticated users" ON public.profiles;
 CREATE POLICY "Profiles are viewable by authenticated users"

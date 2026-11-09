@@ -36,6 +36,9 @@ Aplikasi web modern berbasis **React 19 + Vite 6 + Supabase** yang dirancang khu
 Seluruh migrasi database tersimpan di:  
 [`supabase/migration_penitipan_barang.sql`](supabase/migration_penitipan_barang.sql)
 
+Jalankan skrip tersebut pada **Supabase SQL Editor** untuk menyiapkan tabel,
+bucket foto publik `deposit-items`, dan kebijakan unggah khusus petugas.
+
 ### Entitas Tabel Utama:
 1. `profiles`: Menyimpan data akun satpam dan admin (terhubung ke `auth.users`).
 2. `visitors`: Direktori identitas pengunjung dan frekuensi kunjungan.
