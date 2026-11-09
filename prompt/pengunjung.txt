@@ -1,0 +1,70 @@
+## ATURAN TAMBAHAN: PENCOCOKAN DAN VALIDASI IDENTITAS PENGUNJUNG
+
+Sistem wajib memiliki mekanisme pencocokan identitas pengunjung sebelum barang diserahkan kembali.
+
+### 1. Data Identitas Saat Penitipan
+
+Petugas wajib mencatat:
+- Nama lengkap pengunjung.
+- Asal instansi/sekolah/perusahaan.
+- Nomor identitas (KTP/Kartu Pelajar/identitas lainnya), jika diperlukan sesuai kebijakan perusahaan.
+- Nomor telepon (opsional).
+
+Identitas tersebut harus terhubung dengan kode transaksi penitipan.
+
+### 2. Proses Validasi Saat Pengambilan
+
+Ketika pengunjung menyerahkan kartu tanda penitipan:
+
+1. Satpam memindai QR Code atau memasukkan kode penitipan.
+2. Sistem menampilkan identitas pengunjung dan seluruh barang yang dititipkan.
+3. Satpam meminta identitas pengunjung untuk diperiksa.
+4. Satpam mencocokkan nama dan informasi identitas dengan data saat penitipan.
+5. Satpam mencocokkan kartu penitipan dengan kode transaksi di sistem.
+6. Satpam memastikan barang yang diserahkan sesuai dengan daftar barang dan dokumentasi.
+7. Jika seluruh pemeriksaan sesuai, satpam dapat melanjutkan proses penyerahan barang.
+
+### 3. Kondisi Ketidaksesuaian Identitas
+
+Sistem harus menangani kondisi berikut:
+
+- **Identitas sesuai:** Pengambilan dapat dilanjutkan.
+- **Nama tidak sesuai:** Pengambilan ditahan sampai dilakukan pemeriksaan lebih lanjut.
+- **Kartu penitipan hilang:** Petugas wajib melakukan verifikasi alternatif berdasarkan data penitipan dan identitas pengunjung. Tidak boleh langsung menyerahkan barang hanya berdasarkan pengakuan pengunjung.
+- **Kartu digunakan orang lain:** Wajib dilakukan pemeriksaan tambahan dan persetujuan petugas berwenang.
+- **Identitas tidak dapat diverifikasi:** Barang tidak boleh diserahkan sebelum ada penyelesaian verifikasi.
+
+### 4. Validasi oleh Petugas
+
+Sebelum menekan tombol KONFIRMASI PENGAMBILAN, tampilkan checklist:
+
+- [ ] Kartu penitipan sudah diperiksa.
+- [ ] Nama pengunjung sudah dicocokkan.
+- [ ] Identitas pengunjung sudah diverifikasi.
+- [ ] Barang sudah dicocokkan dengan data penitipan.
+- [ ] Barang sudah diserahkan kepada pengunjung.
+
+Semua pemeriksaan wajib diselesaikan sebelum transaksi dapat ditutup.
+
+### 5. Pencatatan Audit
+
+Simpan informasi:
+- Identitas pengunjung yang mengambil barang.
+- Petugas yang melakukan verifikasi.
+- Waktu verifikasi.
+- Waktu penyerahan barang.
+- Metode verifikasi.
+- Catatan apabila terjadi ketidaksesuaian.
+- Hasil verifikasi.
+
+Jika terjadi ketidaksesuaian, catat sebagai aktivitas pemeriksaan dan jangan mengubah status transaksi menjadi SELESAI.
+
+### 6. Aturan Keamanan
+
+- QR Code hanya berfungsi sebagai alat pencarian transaksi, bukan bukti tunggal kepemilikan barang.
+- Kartu penitipan tidak menggantikan pemeriksaan identitas.
+- Pengambilan oleh orang lain harus melalui prosedur otorisasi khusus.
+- Semua proses verifikasi harus tercatat.
+- Petugas tidak boleh melewati validasi hanya untuk mempercepat pelayanan.
+
+**PRINSIP UTAMA: BARANG HANYA BOLEH DISERAHKAN SETELAH KARTU PENITIPAN, IDENTITAS PENGUNJUNG, DAN DATA BARANG BERHASIL DIVERIFIKASI.**

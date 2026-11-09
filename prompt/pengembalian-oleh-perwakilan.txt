@@ -1,0 +1,63 @@
+### ALUR PENGAMBILAN BARANG OLEH PERWAKILAN
+
+Sistem harus mendukung pengambilan barang oleh orang lain yang diberi kuasa oleh pengunjung saat penitipan.
+
+**1. Pemilihan metode pengambilan**
+
+Saat petugas memproses pengambilan, sediakan dua pilihan:
+- Pengambilan oleh pemilik barang.
+- Pengambilan oleh perwakilan pemilik barang.
+
+**2. Input identitas perwakilan**
+
+Jika memilih pengambilan oleh perwakilan, petugas wajib mengisi:
+- Nama lengkap perwakilan.
+- Nomor identitas (KTP/SIM/kartu identitas lain).
+- Nomor telepon (opsional).
+- Hubungan dengan pemilik barang.
+- Keterangan atau alasan pengambilan oleh perwakilan.
+
+**3. Verifikasi dan otorisasi**
+
+Sebelum barang diserahkan, petugas harus:
+- Memindai QR atau memasukkan kode klaim transaksi.
+- Memastikan transaksi sesuai dengan data penitipan.
+- Memeriksa identitas asli perwakilan.
+- Memastikan perwakilan memiliki izin dari pemilik barang.
+- Meminta bukti kuasa atau konfirmasi langsung dari pemilik barang sesuai kebijakan perusahaan.
+- Memastikan barang yang akan diserahkan sesuai dengan catatan penitipan.
+
+Jika otorisasi tidak dapat dibuktikan atau identitas tidak sesuai, proses pengambilan harus ditunda. Petugas tidak boleh menyerahkan barang hanya berdasarkan kode klaim atau pengakuan perwakilan.
+
+**4. Konfirmasi penyerahan**
+
+Tampilkan ringkasan sebelum petugas menyelesaikan transaksi:
+- Identitas pemilik barang.
+- Identitas perwakilan.
+- Daftar barang yang diserahkan.
+- Metode verifikasi dan bukti otorisasi.
+- Nama petugas yang melakukan verifikasi.
+
+Petugas harus memberikan konfirmasi akhir sebelum status transaksi berubah menjadi `completed`.
+
+**5. Pencatatan database dan audit**
+
+Simpan informasi berikut pada data pengambilan:
+- `pickup_method`: owner / representative.
+- `representative_name`.
+- `representative_identity_number`.
+- `representative_phone`.
+- `representative_relationship`.
+- `authorization_method`.
+- `authorization_notes`.
+- `verified_by`.
+- `pickup_verified_at`.
+- `pickup_completed_at`.
+
+Untuk pengambilan langsung oleh pemilik, data perwakilan tidak perlu diisi.
+
+**6. Riwayat dan laporan**
+
+Riwayat transaksi harus menampilkan apakah barang diambil oleh pemilik atau perwakilan. Jika diambil oleh perwakilan, tampilkan identitas perwakilan dan petugas yang melakukan verifikasi. Data tersebut harus dapat ditelusuri oleh administrator.
+
+**Prinsip keamanan:** Pengambilan oleh perwakilan harus memiliki proses verifikasi dan otorisasi yang jelas. QR/kode klaim hanya digunakan untuk menemukan transaksi, bukan sebagai bukti tunggal bahwa seseorang berhak mengambil barang.

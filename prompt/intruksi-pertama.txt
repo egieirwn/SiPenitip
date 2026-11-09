@@ -1,0 +1,664 @@
+# REBUILD APPLICATION: SISTEM INFORMASI PENITIPAN BARANG PENGUNJUNG PERUSAHAAN
+
+## 1. INSTRUKSI UTAMA
+
+Saya ingin melakukan perubahan menyeluruh (rebuild/refactoring) terhadap aplikasi yang sudah tersedia.
+
+Aplikasi sebelumnya bernama **Campus IoT - Sistem Inventaris & Peminjaman Laboratorium**.
+
+Ubah keseluruhan konsep aplikasi menjadi:
+
+**SISTEM INFORMASI PENITIPAN BARANG PENGUNJUNG PERUSAHAAN**
+
+Sistem ini digunakan oleh perusahaan berskala besar yang menerapkan peraturan keamanan bahwa pengunjung tidak diperbolehkan membawa barang tertentu ke dalam area perusahaan.
+
+Contohnya:
+- Tas dan ransel.
+- Koper.
+- Rokok.
+- Korek api.
+- Perangkat atau benda tertentu yang dilarang oleh perusahaan.
+- Barang lainnya sesuai kebijakan keamanan perusahaan.
+
+Perusahaan menyediakan tempat penitipan barang yang dikelola langsung oleh petugas keamanan (satpam).
+
+Pengunjung menyerahkan barang kepada satpam, kemudian satpam mencatat identitas pengunjung dan barang yang dititipkan melalui aplikasi. Setelah itu, sistem menghasilkan dan mencetak kartu tanda penitipan sebagai bukti kepemilikan barang.
+
+Ketika pengunjung selesai melakukan kunjungan, pengunjung cukup menyerahkan kartu penitipan kepada satpam. Satpam melakukan validasi, menyerahkan barang, dan mengonfirmasi pengambilan melalui sistem.
+
+**Fokus utama aplikasi adalah pencatatan, pengelolaan, keamanan, dan pelacakan seluruh aktivitas penitipan barang pengunjung.**
+
+PENTING:
+- Jangan hanya mengganti nama atau tulisan aplikasi.
+- Ubah seluruh logika bisnis agar sesuai dengan sistem penitipan barang.
+- Sesuaikan seluruh halaman, komponen, navigasi, database, dan alur operasional.
+- Pertahankan fondasi teknologi project yang masih relevan.
+- Jangan membangun ulang dari nol jika struktur project lama masih dapat digunakan.
+- Lakukan audit project sebelum melakukan perubahan.
+
+---
+
+## 2. TEKNOLOGI YANG DIPERTAHANKAN
+
+Pertahankan teknologi yang sudah digunakan:
+
+- React 19
+- Vite 6
+- JavaScript ES6+
+- React Router v7
+- Custom Vanilla CSS
+- Lucide React
+- Supabase Authentication
+- Supabase PostgreSQL
+- Supabase Storage
+- PostgreSQL Functions / RPC
+- Row Level Security (RLS)
+
+Jangan mengganti framework, backend, atau database tanpa alasan teknis yang kuat.
+
+---
+
+## 3. KONSEP DAN MODEL OPERASIONAL
+
+Sistem menggunakan model penitipan manual yang sepenuhnya dikendalikan oleh petugas keamanan.
+
+Tidak ada transaksi pembayaran, biaya penitipan, atau proses pemesanan online.
+
+Seluruh aktivitas dilakukan oleh satpam melalui dashboard aplikasi.
+
+### Alur operasional utama:
+
+1. Pengunjung datang ke pos keamanan perusahaan.
+2. Satpam menginformasikan aturan penitipan barang.
+3. Pengunjung menyerahkan barang yang tidak diperbolehkan masuk.
+4. Satpam menginput identitas pengunjung.
+5. Satpam menginput informasi barang yang dititipkan.
+6. Satpam mengambil foto barang sebagai dokumentasi.
+7. Satpam menentukan lokasi penyimpanan barang.
+8. Sistem menghasilkan kode penitipan unik.
+9. Sistem menghasilkan kartu tanda penitipan yang dapat dicetak menggunakan printer.
+10. Pengunjung menerima kartu tersebut.
+11. Setelah kunjungan selesai, pengunjung kembali ke pos penitipan.
+12. Pengunjung menyerahkan kartu kepada satpam.
+13. Satpam melakukan pencarian atau pemindaian QR Code pada kartu.
+14. Sistem menampilkan informasi transaksi dan barang.
+15. Satpam mencocokkan barang dan identitas pengunjung.
+16. Satpam menyerahkan barang.
+17. Satpam menekan tombol konfirmasi pengambilan.
+18. Sistem otomatis mencatat waktu keluar dan mengubah status transaksi menjadi SELESAI.
+
+---
+
+## 4. ROLE DAN HAK AKSES
+
+Gunakan Role-Based Access Control (RBAC).
+
+### A. Administrator
+
+Administrator bertanggung jawab atas pengelolaan sistem.
+
+Hak akses:
+- Melihat dashboard keseluruhan.
+- Mengelola akun satpam.
+- Menambahkan dan menonaktifkan akun petugas.
+- Melihat seluruh transaksi penitipan.
+- Melihat seluruh riwayat transaksi.
+- Mengelola kategori barang.
+- Mengelola lokasi penyimpanan.
+- Melihat laporan penitipan.
+- Melihat aktivitas petugas.
+- Mengelola konfigurasi sistem.
+
+### B. Petugas Keamanan (Satpam)
+
+Satpam merupakan pengguna utama aplikasi.
+
+Hak akses:
+- Login ke sistem.
+- Melihat dashboard operasional.
+- Mendaftarkan penitipan baru.
+- Menginput identitas pengunjung.
+- Menginput data barang.
+- Mengunggah foto barang.
+- Menentukan lokasi penyimpanan.
+- Mencetak kartu penitipan.
+- Mencari transaksi penitipan.
+- Memindai QR Code.
+- Memproses pengambilan barang.
+- Melihat riwayat penitipan sesuai hak akses.
+
+Tidak perlu membuat akun khusus untuk pengunjung. Pengunjung tidak berinteraksi langsung dengan aplikasi.
+
+---
+
+## 5. MODUL DAN FITUR UTAMA
+
+### A. Dashboard
+
+Buat dashboard utama yang berfungsi sebagai pusat pemantauan aktivitas penitipan.
+
+Tampilkan statistik:
+
+- Total penitipan hari ini.
+- Total barang yang sedang dititipkan.
+- Total barang yang sudah diambil hari ini.
+- Total pengunjung hari ini.
+- Jumlah transaksi yang belum selesai.
+- Jumlah lokasi penyimpanan yang masih tersedia.
+
+Tambahkan:
+- Grafik aktivitas penitipan.
+- Grafik pengambilan barang.
+- Daftar transaksi terbaru.
+- Daftar barang yang masih dititipkan.
+- Aktivitas petugas terbaru.
+
+Dashboard harus menampilkan data aktual dari Supabase.
+
+### B. Registrasi Penitipan Baru
+
+Buat halaman khusus untuk mencatat pengunjung yang ingin menitipkan barang.
+
+Formulir dibagi menjadi dua bagian.
+
+**Bagian 1: Identitas Pengunjung**
+
+Data yang harus tersedia:
+- Nama lengkap.
+- Asal instansi/sekolah/perusahaan.
+- Jenis kunjungan.
+- Nomor identitas (opsional).
+- Nomor telepon (opsional).
+- Catatan tambahan.
+
+Jenis kunjungan dapat berupa:
+- Kunjungan Industri.
+- Kunjungan Pendidikan.
+- Kunjungan Kerja.
+- Tamu Perusahaan.
+- Kunjungan Instansi.
+- Lainnya.
+
+**Bagian 2: Informasi Barang**
+
+Data yang harus tersedia:
+- Nama barang.
+- Kategori barang.
+- Jumlah barang.
+- Deskripsi barang.
+- Kondisi awal barang.
+- Foto barang.
+- Lokasi penyimpanan.
+- Catatan tambahan.
+
+Satu pengunjung dapat menitipkan beberapa barang dalam satu transaksi.
+
+Contoh:
+
+Pengunjung: Ahmad Rizki
+
+Asal: SMK Negeri 1
+
+Barang yang dititipkan:
+- 1 Tas Ransel.
+- 1 Korek Api.
+- 1 Bungkus Rokok.
+
+Seluruh barang tersebut berada dalam satu transaksi penitipan dan menggunakan satu kartu tanda penitipan.
+
+Setelah formulir disimpan:
+- Sistem menghasilkan kode penitipan unik.
+- Sistem mencatat waktu masuk otomatis.
+- Sistem menyimpan identitas petugas penerima.
+- Sistem menghasilkan QR Code.
+- Sistem menampilkan preview kartu penitipan.
+- Petugas dapat langsung mencetak kartu.
+
+### C. Kartu Tanda Penitipan
+
+Fitur ini merupakan salah satu bagian paling penting dalam aplikasi.
+
+Buat sistem pembuatan kartu penitipan yang dapat dicetak.
+
+Informasi pada kartu:
+
+- Identitas perusahaan.
+- Judul KARTU TANDA PENITIPAN BARANG.
+- Kode penitipan unik.
+- QR Code.
+- Nama pengunjung.
+- Asal instansi.
+- Daftar barang yang dititipkan.
+- Jumlah barang.
+- Tanggal dan waktu penitipan.
+- Lokasi penyimpanan.
+- Informasi bahwa kartu harus dikembalikan saat pengambilan barang.
+
+Contoh format kode penitipan:
+
+DEP-20261110-0001
+
+DEP-20261110-0002
+
+DEP-20261110-0003
+
+Kode harus unik dan tidak boleh digunakan kembali.
+
+Ketentuan desain:
+- Desain profesional dan mudah dibaca.
+- Ukuran kartu menyesuaikan printer yang tersedia.
+- Sediakan tampilan preview sebelum dicetak.
+- Gunakan CSS khusus untuk print.
+- Pastikan hasil cetak tidak memuat sidebar, navbar, atau elemen dashboard.
+- QR Code harus mengarah pada identitas transaksi yang aman, bukan memberikan akses publik langsung ke seluruh data pengunjung.
+
+### D. Manajemen Barang Dititipkan
+
+Buat halaman untuk melihat seluruh barang yang masih berada di tempat penitipan.
+
+Informasi tabel:
+- Kode penitipan.
+- Nama pengunjung.
+- Asal instansi.
+- Nama barang.
+- Jumlah barang.
+- Waktu masuk.
+- Lokasi penyimpanan.
+- Petugas penerima.
+- Status.
+
+Sediakan:
+- Pencarian berdasarkan kode penitipan.
+- Pencarian berdasarkan nama pengunjung.
+- Pencarian berdasarkan nama barang.
+- Filter kategori.
+- Filter tanggal.
+- Filter lokasi penyimpanan.
+
+Status utama: SEDANG DITITIPKAN.
+
+### E. Pengambilan Barang
+
+Buat halaman khusus untuk proses pengambilan barang.
+
+Fitur utama:
+
+1. Input kode penitipan secara manual.
+2. Pemindaian QR Code menggunakan kamera jika perangkat mendukung.
+3. Pencarian berdasarkan nama pengunjung.
+4. Pencarian berdasarkan kode penitipan.
+
+Setelah transaksi ditemukan, tampilkan:
+
+- Kode penitipan.
+- Nama pengunjung.
+- Asal instansi.
+- Daftar barang.
+- Foto barang.
+- Kondisi awal.
+- Lokasi penyimpanan.
+- Waktu penitipan.
+- Nama petugas penerima.
+
+Sediakan tombol:
+
+**KONFIRMASI PENGAMBILAN BARANG**
+
+Sebelum konfirmasi, tampilkan modal verifikasi untuk memastikan satpam sudah mencocokkan kartu, identitas, dan barang.
+
+Setelah dikonfirmasi:
+- Status berubah menjadi SELESAI.
+- Waktu keluar dicatat otomatis.
+- Nama petugas penyerah dicatat.
+- Lokasi penyimpanan kembali tersedia.
+- Transaksi masuk ke riwayat.
+
+PENTING:
+Transaksi yang sudah selesai tidak boleh diproses kembali sebagai transaksi pengambilan aktif.
+
+### F. Riwayat Penitipan
+
+Buat halaman untuk menyimpan seluruh aktivitas penitipan yang pernah dilakukan.
+
+Data yang harus ditampilkan:
+
+- Kode penitipan.
+- Nama pengunjung.
+- Asal instansi.
+- Jenis kunjungan.
+- Barang yang dititipkan.
+- Waktu masuk.
+- Waktu keluar.
+- Petugas penerima.
+- Petugas penyerah.
+- Status transaksi.
+
+Sediakan filter berdasarkan:
+- Tanggal.
+- Bulan.
+- Tahun.
+- Nama pengunjung.
+- Instansi.
+- Nama barang.
+- Status.
+
+Riwayat harus tetap tersimpan meskipun barang telah diambil.
+
+Jangan menghapus transaksi selesai secara otomatis.
+
+### G. Data Pengunjung
+
+Sediakan halaman untuk melihat data pengunjung yang pernah menggunakan layanan penitipan.
+
+Fitur:
+- Melihat identitas pengunjung.
+- Melihat asal instansi.
+- Melihat riwayat penitipan pengunjung.
+- Mencari pengunjung.
+- Melihat jumlah kunjungan.
+
+Data pengunjung dapat digunakan kembali untuk mempermudah pencatatan kunjungan berikutnya.
+
+Hindari duplikasi data pengunjung jika identitas yang sama sudah terdaftar.
+
+### H. Manajemen Lokasi Penyimpanan
+
+Buat modul pengelolaan tempat penyimpanan.
+
+Contoh lokasi:
+- Rak A01.
+- Rak A02.
+- Rak A03.
+- Rak B01.
+- Loker 001.
+- Loker 002.
+
+Setiap lokasi mempunyai:
+- Kode lokasi.
+- Nama lokasi.
+- Kapasitas.
+- Jumlah barang/transaksi aktif.
+- Status tersedia.
+- Status penuh.
+- Status nonaktif.
+
+Petugas dapat mengetahui tempat penyimpanan yang tersedia.
+
+### I. Laporan
+
+Sediakan laporan operasional:
+
+- Total penitipan berdasarkan periode.
+- Total pengambilan berdasarkan periode.
+- Total pengunjung.
+- Total barang yang dititipkan.
+- Barang yang masih berada di penyimpanan.
+- Aktivitas berdasarkan kategori barang.
+- Aktivitas berdasarkan instansi.
+- Aktivitas berdasarkan petugas.
+
+Sediakan fitur ekspor laporan ke PDF atau Excel jika memungkinkan.
+
+---
+
+## 6. KATEGORI BARANG
+
+Sediakan kategori barang awal:
+
+1. Tas dan Koper.
+2. Perangkat Elektronik.
+3. Rokok dan Korek Api.
+4. Aksesori.
+5. Dokumen dan Berkas.
+6. Perlengkapan Pribadi.
+7. Barang Lainnya.
+
+Kategori dapat dikelola oleh administrator.
+
+Catatan: Sistem ini digunakan untuk mencatat barang yang dilarang dibawa masuk ke area perusahaan, bukan untuk menentukan sendiri apakah suatu barang dilarang. Kebijakan penerimaan barang tetap mengikuti aturan perusahaan.
+
+---
+
+## 7. STATUS TRANSAKSI
+
+Gunakan status berikut:
+
+- MENUNGGU PENYIMPANAN.
+- SEDANG DITITIPKAN.
+- SELESAI.
+- DIBATALKAN.
+
+Status harus diperbarui berdasarkan aktivitas nyata petugas.
+
+Simpan waktu setiap perubahan status.
+
+---
+
+## 8. DATABASE DAN BACKEND
+
+Lakukan penyesuaian database PostgreSQL melalui Supabase.
+
+Rancang tabel minimal:
+
+### profiles
+Menyimpan akun dan role pengguna.
+
+### visitors
+Menyimpan identitas pengunjung.
+
+### item_categories
+Menyimpan kategori barang.
+
+### storage_locations
+Menyimpan data lokasi penyimpanan.
+
+### deposit_transactions
+Menyimpan transaksi utama penitipan.
+
+### deposit_items
+Menyimpan detail barang dalam setiap transaksi.
+
+### transaction_logs
+Menyimpan riwayat aktivitas dan perubahan status.
+
+Relasi yang diharapkan:
+
+- Satu pengunjung dapat memiliki banyak transaksi penitipan.
+- Satu transaksi penitipan dapat memiliki banyak barang.
+- Satu transaksi mempunyai satu kode penitipan unik.
+- Satu transaksi memiliki petugas penerima.
+- Satu transaksi dapat memiliki petugas penyerah.
+- Setiap barang memiliki lokasi penyimpanan.
+- Setiap perubahan status tercatat dalam log.
+
+Ketentuan teknis:
+
+- Gunakan foreign key yang tepat.
+- Tambahkan index untuk kolom pencarian.
+- Gunakan constraint untuk menjaga integritas data.
+- Gunakan Supabase Storage untuk foto barang.
+- Gunakan RPC untuk proses transaksi penting.
+- Terapkan RLS berdasarkan role.
+- Cegah pengambilan ganda menggunakan transaksi database atomik.
+- Simpan seluruh riwayat transaksi.
+
+Sebelum melakukan migrasi:
+- Periksa database lama.
+- Identifikasi tabel yang masih relevan.
+- Jangan langsung menghapus data lama.
+- Buat migrasi yang aman dan terdokumentasi.
+
+---
+
+## 9. DESAIN UI/UX
+
+Buat desain dashboard profesional untuk perusahaan berskala besar.
+
+Karakter desain:
+- Modern.
+- Minimalis.
+- Profesional.
+- Bersih.
+- Elegan.
+- Mudah digunakan oleh satpam.
+- Mengutamakan kecepatan operasional.
+
+Gunakan:
+- Sidebar navigasi.
+- Topbar.
+- Kartu statistik.
+- Tabel data.
+- Modal konfirmasi.
+- Formulir terstruktur.
+- Toast notification.
+- Loading state.
+- Empty state.
+- Responsive layout.
+
+Pertahankan Custom Vanilla CSS dengan CSS Variables dan design tokens.
+
+Gunakan Lucide React untuk ikon.
+
+Jangan menggunakan Bootstrap atau mengganti sistem desain dengan framework CSS baru.
+
+---
+
+## 10. STRUKTUR NAVIGASI
+
+Susun sidebar menjadi:
+
+**OVERVIEW**
+- Dashboard
+
+**OPERASIONAL**
+- Penitipan Baru
+- Barang Dititipkan
+- Pengambilan Barang
+
+**DATA**
+- Data Pengunjung
+- Riwayat Penitipan
+
+**MANAJEMEN**
+- Kategori Barang
+- Lokasi Penyimpanan
+- Manajemen Petugas
+
+**PELAPORAN**
+- Laporan Penitipan
+
+**PENGATURAN**
+- Pengaturan Sistem
+- Profil Pengguna
+
+Menu harus menyesuaikan role Administrator dan Petugas.
+
+---
+
+## 11. KEAMANAN DAN VALIDASI
+
+Pastikan:
+- Hanya satpam yang terautentikasi dapat melakukan penitipan.
+- Hanya pengguna berwenang dapat mengakses administrator.
+- Pengambilan barang harus melalui validasi.
+- Kode penitipan tidak dapat digunakan dua kali untuk pengambilan.
+- Setiap transaksi mencatat identitas petugas.
+- Setiap perubahan status tercatat.
+- Foto barang disimpan secara aman.
+- QR Code tidak mengekspos informasi sensitif.
+- Data historis tidak boleh hilang akibat perubahan status.
+- Validasi dilakukan pada frontend dan backend.
+
+---
+
+## 12. TAHAPAN PENGERJAAN
+
+### TAHAP 1 — AUDIT PROJECT
+- Periksa struktur direktori.
+- Periksa komponen React.
+- Periksa seluruh halaman.
+- Periksa konfigurasi Supabase.
+- Periksa database.
+- Identifikasi fitur lama yang masih dapat digunakan.
+
+### TAHAP 2 — REBUILD DATABASE
+- Rancang skema database baru.
+- Buat migrasi.
+- Sesuaikan RLS.
+- Buat fungsi RPC.
+- Sesuaikan Supabase Storage.
+
+### TAHAP 3 — REBUILD FRONTEND
+- Ubah identitas aplikasi.
+- Ubah navigasi.
+- Bangun dashboard.
+- Bangun formulir penitipan.
+- Bangun kartu tanda penitipan.
+- Bangun halaman barang dititipkan.
+- Bangun halaman pengambilan.
+- Bangun halaman riwayat.
+- Bangun laporan.
+
+### TAHAP 4 — INTEGRASI
+- Hubungkan seluruh fitur dengan Supabase.
+- Pastikan CRUD berjalan.
+- Pastikan autentikasi berjalan.
+- Pastikan upload foto berjalan.
+- Pastikan QR Code berfungsi.
+- Pastikan pencetakan kartu berjalan.
+- Pastikan transaksi pengambilan berjalan.
+
+### TAHAP 5 — TESTING
+- Uji penitipan barang.
+- Uji penginputan beberapa barang dalam satu transaksi.
+- Uji pembuatan kode penitipan.
+- Uji cetak kartu.
+- Uji pemindaian QR Code.
+- Uji validasi pengambilan.
+- Uji transaksi selesai.
+- Uji riwayat.
+- Uji hak akses.
+- Uji keamanan RLS.
+- Uji build produksi.
+
+---
+
+## 13. ATURAN KHUSUS UNTUK AI AGENT
+
+1. Jangan hanya membuat tampilan statis.
+2. Seluruh fitur utama harus terhubung dengan Supabase.
+3. Jangan menggunakan data dummy sebagai pengganti database.
+4. Jangan menghapus autentikasi lama jika masih relevan.
+5. Jangan mengubah konfigurasi environment tanpa kebutuhan.
+6. Jangan menghapus database lama secara sembarangan.
+7. Jangan meninggalkan istilah Campus IoT, laboratorium, mahasiswa, dosen, inventaris komponen, dan peminjaman dalam aplikasi baru.
+8. Gunakan komponen reusable.
+9. Hindari duplikasi kode.
+10. Pastikan semua tombol mempunyai fungsi nyata.
+11. Pastikan seluruh halaman konsisten.
+12. Prioritaskan kecepatan operasional petugas.
+13. Pastikan kartu penitipan dapat dicetak dengan benar.
+14. Pastikan proses pengambilan tidak dapat dilakukan dua kali.
+15. Jangan berhenti pada pembuatan UI; selesaikan integrasi backend dan pengujian.
+
+## 14. HASIL AKHIR YANG DIHARAPKAN
+
+Aplikasi web profesional bernama:
+
+**SISTEM INFORMASI PENITIPAN BARANG PENGUNJUNG PERUSAHAAN**
+
+Sistem harus mampu membantu satpam perusahaan dalam:
+
+- Mencatat identitas pengunjung.
+- Mencatat barang yang dititipkan.
+- Mendokumentasikan kondisi barang.
+- Mengatur lokasi penyimpanan.
+- Menghasilkan dan mencetak kartu penitipan.
+- Memvalidasi pengambilan menggunakan kartu atau QR Code.
+- Mencatat waktu masuk dan keluar.
+- Menyimpan riwayat seluruh transaksi.
+- Menyediakan laporan operasional.
+
+Hasil akhir harus berupa aplikasi yang benar-benar berfungsi, aman, terintegrasi dengan Supabase, dan siap dikembangkan untuk penggunaan operasional perusahaan.
+
+**PRIORITAS UTAMA: KETEPATAN PENCATATAN, KEAMANAN BARANG, KECEPATAN PELAYANAN SATPAM, DAN KELENGKAPAN RIWAYAT TRANSAKSI.**

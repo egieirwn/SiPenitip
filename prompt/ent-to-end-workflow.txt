@@ -1,0 +1,238 @@
+# END-TO-END WORKFLOW SISTEM PENITIPAN BARANG PENGUNJUNG
+
+Bangun alur proses end-to-end yang terintegrasi untuk memastikan setiap tahapan penitipan dan pengambilan barang berjalan secara konsisten, aman, dan tercatat dalam database.
+
+## 1. Pengunjung Datang ke Pos Keamanan
+
+1. Pengunjung datang ke pos keamanan perusahaan.
+2. Petugas menanyakan apakah pengunjung membawa barang yang tidak diperbolehkan masuk ke area perusahaan.
+3. Petugas menjelaskan prosedur penitipan sesuai kebijakan perusahaan.
+4. Jika pengunjung tidak memiliki barang yang perlu dititipkan, proses penitipan tidak perlu dilakukan.
+5. Jika terdapat barang yang harus dititipkan, petugas memulai transaksi baru melalui aplikasi.
+
+## 2. Registrasi Data Pengunjung
+
+Petugas mengisi data pengunjung:
+- Nama lengkap.
+- Asal instansi atau perusahaan.
+- Jenis kunjungan.
+- Nomor identitas (jika diperlukan).
+- Nomor telepon (opsional).
+
+Sistem melakukan validasi terhadap data wajib sebelum melanjutkan.
+
+## 3. Pendataan Barang
+
+Petugas mencatat seluruh barang yang dititipkan dalam satu transaksi.
+
+Setiap barang memiliki data:
+- Nama barang.
+- Kategori.
+- Jumlah.
+- Deskripsi atau ciri khusus.
+- Kondisi barang saat diterima.
+- Foto barang (jika diperlukan).
+- Catatan tambahan.
+
+Petugas harus memastikan data dan kondisi barang telah sesuai dengan barang fisik yang diterima.
+
+Jika perusahaan melarang jenis barang tertentu untuk dititipkan, sistem harus memberikan peringatan dan petugas mengikuti kebijakan perusahaan.
+
+## 4. Penempatan Barang
+
+1. Petugas memilih lokasi penyimpanan.
+2. Sistem memeriksa ketersediaan lokasi.
+3. Petugas menempatkan barang pada lokasi tersebut.
+4. Sistem menyimpan hubungan antara transaksi, barang, dan lokasi penyimpanan.
+5. Status barang berubah menjadi `stored` setelah penyimpanan dikonfirmasi.
+
+Sistem harus mencegah penempatan barang pada lokasi yang sedang tidak tersedia atau sudah digunakan, sesuai aturan kapasitas lokasi.
+
+## 5. Pembuatan Bukti Penitipan
+
+Setelah seluruh data valid:
+
+1. Sistem menghasilkan kode transaksi unik, misalnya `DEP-20261110-0001`.
+2. Sistem menghasilkan QR Code yang mengarah ke identitas transaksi, bukan URL publik yang membuka data pribadi.
+3. Sistem membuat kartu penitipan yang dapat dicetak.
+4. Kartu memuat kode klaim, QR Code, tanggal dan waktu penitipan, serta informasi ringkas yang diperlukan.
+5. Petugas menyerahkan kartu kepada pengunjung.
+6. Sistem mencatat waktu penitipan dan petugas yang bertanggung jawab.
+
+Status transaksi menjadi `stored`.
+
+## 6. Selama Barang Dititipkan
+
+Barang tercatat sebagai barang aktif yang masih berada dalam penguasaan perusahaan.
+
+Petugas dapat:
+- Melihat daftar barang yang masih dititipkan.
+- Mencari transaksi berdasarkan kode klaim atau identitas pengunjung.
+- Melihat foto dan deskripsi barang.
+- Melihat lokasi penyimpanan.
+- Melihat waktu penitipan.
+- Melihat riwayat aktivitas transaksi.
+
+Setiap perubahan data penting harus masuk ke `transaction_logs`.
+
+## 7. Pengunjung Mengajukan Pengambilan
+
+Ketika pengunjung selesai melakukan kunjungan, pengunjung kembali ke pos keamanan.
+
+Petugas menawarkan dua metode pengambilan:
+
+- **Pengambilan oleh pemilik:** barang diambil langsung oleh pengunjung yang menitipkan.
+- **Pengambilan oleh perwakilan:** barang diambil oleh orang yang diberi kuasa oleh pemilik.
+
+## 8. Identifikasi Transaksi
+
+Petugas:
+1. Memindai QR Code pada kartu atau memasukkan kode klaim secara manual.
+2. Sistem mencari transaksi terkait.
+3. Sistem menampilkan informasi pemilik, daftar barang, foto, kondisi, lokasi, dan status transaksi.
+4. Sistem memeriksa apakah transaksi masih berstatus `stored`.
+5. Sistem menolak transaksi yang sudah selesai, dibatalkan, atau tidak ditemukan.
+
+QR Code hanya menjadi alat pencarian transaksi dan bukan bukti tunggal hak pengambilan.
+
+## 9. Verifikasi Berdasarkan Metode Pengambilan
+
+### A. Jika Diambil oleh Pemilik
+
+1. Petugas meminta kartu penitipan.
+2. Petugas memeriksa identitas asli pengunjung.
+3. Sistem menampilkan identitas pemilik berdasarkan transaksi.
+4. Petugas mencocokkan nama dan nomor identitas.
+5. Petugas mencocokkan daftar barang dan foto dengan barang fisik.
+6. Petugas menandai setiap pemeriksaan pada checklist.
+7. Jika terdapat ketidaksesuaian, proses dihentikan sampai masalah diselesaikan sesuai kebijakan perusahaan.
+
+### B. Jika Diambil oleh Perwakilan
+
+1. Petugas memilih metode pengambilan `representative`.
+2. Petugas memasukkan identitas lengkap perwakilan.
+3. Petugas mencatat hubungan perwakilan dengan pemilik.
+4. Petugas menentukan jenis bukti kuasa.
+5. Petugas mengisi informasi pemberi dan penerima kuasa.
+6. Petugas mengunggah dokumen atau bukti persetujuan jika diperlukan.
+7. Sistem memeriksa kelengkapan data dan masa berlaku bukti kuasa.
+8. Petugas melakukan pemeriksaan identitas dan otorisasi.
+9. Status bukti kuasa berubah menjadi `verified` atau `rejected`.
+10. Hanya bukti kuasa yang telah diverifikasi yang dapat dilanjutkan ke penyerahan barang.
+
+Jika bukti kuasa tidak valid, kedaluwarsa, tidak sesuai, atau tidak dapat dibuktikan, proses pengambilan harus dihentikan.
+
+## 10. Pemeriksaan Barang Sebelum Penyerahan
+
+Petugas melakukan pemeriksaan akhir:
+- Kode klaim sesuai transaksi.
+- Identitas penerima sesuai metode pengambilan.
+- Otorisasi perwakilan telah diverifikasi jika menggunakan perwakilan.
+- Jumlah barang sesuai catatan.
+- Deskripsi dan foto sesuai.
+- Kondisi barang diperiksa bersama penerima.
+- Lokasi penyimpanan sesuai data sistem.
+
+Jika ditemukan perbedaan, petugas mencatatnya dalam catatan pemeriksaan dan tidak menyelesaikan transaksi sebelum masalah ditangani.
+
+## 11. Konfirmasi Penyerahan Barang
+
+Sebelum transaksi diselesaikan, sistem menampilkan halaman konfirmasi berisi:
+- Kode transaksi.
+- Identitas pemilik barang.
+- Metode pengambilan.
+- Identitas penerima barang.
+- Daftar barang yang diserahkan.
+- Identitas petugas keamanan.
+- Hasil verifikasi.
+- Waktu pengambilan.
+
+Petugas mengonfirmasi bahwa barang telah diserahkan kepada penerima yang berhak.
+
+Sistem kemudian menjalankan proses penyelesaian secara atomik melalui backend:
+1. Memastikan transaksi masih berstatus `stored`.
+2. Memastikan seluruh pemeriksaan wajib telah terpenuhi.
+3. Memastikan bukti kuasa berstatus `verified` jika pengambilan dilakukan oleh perwakilan.
+4. Menyimpan data penerima dan waktu pengambilan.
+5. Mengubah status transaksi menjadi `completed`.
+6. Memperbarui ketersediaan lokasi penyimpanan.
+7. Membuat catatan audit.
+
+Proses harus mencegah dua petugas menyelesaikan pengambilan transaksi yang sama secara bersamaan.
+
+## 12. Riwayat dan Arsip Transaksi
+
+Setelah transaksi selesai, seluruh data tetap disimpan sebagai arsip.
+
+Riwayat harus mencakup:
+- Kode transaksi.
+- Identitas pengunjung.
+- Daftar barang.
+- Foto barang.
+- Lokasi penyimpanan.
+- Waktu masuk dan keluar.
+- Metode pengambilan.
+- Identitas penerima barang.
+- Bukti kuasa jika menggunakan perwakilan.
+- Petugas yang menangani.
+- Catatan pemeriksaan.
+- Riwayat perubahan status.
+
+Administrator dapat mencari, melihat, dan memfilter riwayat berdasarkan tanggal, pengunjung, petugas, status, dan metode pengambilan.
+
+## 13. Penanganan Kondisi Khusus
+
+Sistem harus menyediakan penanganan untuk kondisi berikut:
+
+- **Kartu klaim hilang:** petugas melakukan verifikasi alternatif berdasarkan identitas dan catatan transaksi sesuai kebijakan perusahaan.
+- **Identitas tidak sesuai:** proses pengambilan dihentikan.
+- **Bukti kuasa ditolak:** barang tidak boleh diserahkan kepada perwakilan.
+- **Bukti kuasa kedaluwarsa:** diperlukan bukti kuasa baru yang valid.
+- **Barang tidak sesuai:** petugas membuat catatan ketidaksesuaian.
+- **Transaksi ditemukan sudah selesai:** sistem menolak pengambilan ulang.
+- **Lokasi penyimpanan tidak sesuai:** petugas melakukan pemeriksaan sebelum menyerahkan barang.
+- **Gangguan jaringan:** jangan menganggap transaksi berhasil jika perubahan belum dikonfirmasi oleh backend.
+
+## 14. Standar Status Transaksi
+
+Gunakan status transaksi berikut:
+
+| Status | Penjelasan |
+|---|---|
+| `pending` | Data penitipan sedang dibuat dan belum dikonfirmasi |
+| `stored` | Barang telah diterima dan disimpan |
+| `completed` | Barang telah diserahkan dan pengambilan selesai |
+| `cancelled` | Transaksi dibatalkan sebelum penyelesaian |
+
+Status bukti kuasa harus dikelola terpisah dari status transaksi.
+
+## 15. Integrasi Database dan Backend
+
+Pastikan setiap tahapan terhubung dengan tabel:
+- `profiles`
+- `visitors`
+- `item_categories`
+- `storage_locations`
+- `deposit_transactions`
+- `deposit_items`
+- `pickup_authorizations`
+- `transaction_logs`
+
+Gunakan Supabase RPC untuk operasi kritis seperti konfirmasi penitipan dan penyelesaian pengambilan. Terapkan validasi backend, foreign key, unique constraint, transaksi database, dan RLS.
+
+Jangan hanya mengandalkan validasi frontend.
+
+## 16. Prinsip Implementasi
+
+- Semua tahapan harus memiliki hubungan data yang konsisten.
+- Satu transaksi dapat berisi banyak barang.
+- Satu QR Code mewakili satu transaksi.
+- Satu transaksi hanya boleh diselesaikan satu kali.
+- Pengambilan oleh pemilik dan perwakilan harus memiliki alur verifikasi berbeda.
+- Bukti kuasa wajib diverifikasi sebelum penyerahan kepada perwakilan.
+- Seluruh aktivitas penting harus tercatat dalam audit log.
+- Data transaksi yang selesai tidak boleh dihapus sembarangan.
+- Perubahan data historis harus dibatasi dan dapat ditelusuri.
+- Pastikan seluruh alur dapat digunakan melalui antarmuka petugas keamanan yang sederhana dan responsif.
+
+**TARGET AKHIR:** Sistem harus mampu menangani seluruh siklus penitipan barang secara terintegrasi, mulai dari registrasi pengunjung, pencatatan barang, penyimpanan, pembuatan kartu klaim, verifikasi pengambilan oleh pemilik atau perwakilan, pemeriksaan bukti kuasa, penyerahan barang, hingga pengarsipan dan pelaporan.

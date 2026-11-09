@@ -1,0 +1,110 @@
+### BUKTI KUASA PENGAMBILAN BARANG OLEH PERWAKILAN
+
+Sistem harus menyediakan modul khusus untuk mencatat dan memverifikasi bukti kuasa ketika barang diambil oleh perwakilan pemilik.
+
+**1. Jenis bukti kuasa**
+
+Sediakan pilihan jenis bukti kuasa:
+- Surat kuasa tertulis.
+- Surat kuasa digital.
+- Konfirmasi langsung dari pemilik melalui telepon.
+- Konfirmasi melalui kanal komunikasi resmi perusahaan.
+- Persetujuan langsung pemilik kepada petugas keamanan.
+- Jenis lainnya (dengan keterangan wajib).
+
+**2. Formulir bukti kuasa**
+
+Ketika metode pengambilan dipilih sebagai `representative`, tampilkan formulir dengan kolom:
+
+| Field | Keterangan |
+|---|---|
+| Jenis bukti kuasa | Pilihan dari daftar metode di atas |
+| Nama pemberi kuasa | Nama pemilik barang |
+| Identitas pemberi kuasa | Nomor identitas pemilik |
+| Nama penerima kuasa | Nama perwakilan |
+| Identitas penerima kuasa | Nomor identitas perwakilan |
+| Hubungan | Hubungan perwakilan dengan pemilik |
+| Tanggal pemberian kuasa | Tanggal kuasa diberikan |
+| Berlaku sampai | Tanggal kedaluwarsa kuasa, jika ada |
+| Ruang lingkup kuasa | Barang atau transaksi yang boleh diambil |
+| Keterangan | Informasi tambahan |
+
+**3. Lampiran bukti kuasa**
+
+Sediakan fitur unggah dokumen atau foto untuk:
+- Surat kuasa tertulis yang telah ditandatangani.
+- Dokumen kuasa digital.
+- Bukti komunikasi atau persetujuan pemilik jika diizinkan kebijakan perusahaan.
+
+Simpan file secara privat menggunakan Supabase Storage. Batasi akses berdasarkan role dan kebijakan RLS. Jangan membuat lampiran dapat diakses melalui URL publik.
+
+**4. Status verifikasi bukti kuasa**
+
+Gunakan status:
+- `pending`: belum diperiksa petugas.
+- `verified`: bukti kuasa telah diperiksa dan diterima.
+- `rejected`: bukti kuasa ditolak.
+- `expired`: masa berlaku bukti kuasa telah berakhir.
+
+Petugas wajib memberikan catatan ketika bukti kuasa ditolak. Hanya bukti kuasa berstatus `verified` yang dapat dilanjutkan ke proses penyerahan barang.
+
+**5. Checklist verifikasi**
+
+Sebelum penyerahan, petugas harus memastikan:
+- Identitas pemilik sesuai transaksi penitipan.
+- Identitas perwakilan sesuai dokumen identitas.
+- Nama pemberi dan penerima kuasa sesuai.
+- Bukti kuasa berlaku dan belum kedaluwarsa.
+- Ruang lingkup kuasa mencakup transaksi atau barang yang akan diambil.
+- Bukti kuasa telah diverifikasi dan disetujui.
+
+Jika salah satu pemeriksaan wajib gagal, sistem harus memblokir penyelesaian transaksi.
+
+**6. Struktur database**
+
+Buat tabel terpisah bernama `pickup_authorizations` dengan relasi ke `deposit_transactions`.
+
+Kolom yang disarankan:
+- `id` (UUID, primary key).
+- `transaction_id` (foreign key).
+- `authorization_type`.
+- `grantor_name`.
+- `grantor_identity_number`.
+- `representative_name`.
+- `representative_identity_number`.
+- `representative_phone`.
+- `representative_relationship`.
+- `authorization_date`.
+- `valid_until`.
+- `authorization_scope`.
+- `evidence_file_path`.
+- `verification_status`.
+- `verification_notes`.
+- `verified_by` (foreign key ke profil petugas).
+- `verified_at`.
+- `created_at`.
+- `updated_at`.
+
+Sesuaikan tipe data, constraint, indeks, dan kebijakan RLS dengan skema database yang sudah ada.
+
+**7. Audit dan riwayat**
+
+Catat setiap perubahan status bukti kuasa, termasuk:
+- Status sebelum dan sesudah perubahan.
+- Petugas yang melakukan perubahan.
+- Waktu perubahan.
+- Catatan atau alasan perubahan.
+
+Administrator dapat melihat riwayat bukti kuasa dari detail transaksi.
+
+**8. Aturan keamanan**
+
+- Bukti kuasa hanya berlaku untuk transaksi yang ditentukan.
+- Bukti kuasa yang kedaluwarsa tidak boleh digunakan.
+- Satu bukti kuasa tidak otomatis berlaku untuk transaksi lain.
+- Perubahan identitas atau dokumen setelah verifikasi harus membatalkan status verifikasi dan memerlukan pemeriksaan ulang.
+- Jangan mengizinkan petugas melewati proses verifikasi melalui manipulasi status dari frontend.
+- Validasi seluruh proses penting di backend menggunakan Supabase RPC dan kontrol akses yang sesuai.
+- Terapkan prinsip minimalisasi data: simpan hanya informasi yang diperlukan dan batasi akses terhadap nomor identitas serta dokumen pribadi.
+
+**Prinsip utama:** Barang hanya boleh diserahkan kepada perwakilan setelah identitas perwakilan, keabsahan bukti kuasa, ruang lingkup kuasa, dan kesesuaian transaksi berhasil diverifikasi oleh petugas keamanan.
