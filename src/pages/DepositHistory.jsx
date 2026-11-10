@@ -67,7 +67,7 @@ export default function DepositHistory() {
           visitors(full_name, institution, visit_type),
           received:profiles!received_by(full_name),
           released:profiles!released_by(full_name),
-          deposit_items(name, quantity)
+          deposit_items(id, name, quantity, photo_url)
         `)
         .order('checkin_at', { ascending: false })
         .limit(100);
@@ -259,11 +259,21 @@ export default function DepositHistory() {
               </div>
               <hr />
               <strong style={{ fontSize: '0.875rem' }}>Daftar Barang Dititipkan:</strong>
-              <ul style={{ marginTop: '0.5rem', paddingLeft: '1.25rem', fontSize: '0.875rem' }}>
+              <div className="deposit-history-items">
                 {selected.deposit_items?.map((item, i) => (
-                  <li key={i}>{item.name} ×{item.quantity}</li>
+                  <div className="deposit-history-item" key={item.id || i}>
+                    {item.photo_url && (
+                      <img
+                        className="deposit-item-photo"
+                        src={item.photo_url}
+                        alt={`Foto ${item.name}`}
+                        loading="lazy"
+                      />
+                    )}
+                    <span>{item.name} ×{item.quantity}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -271,4 +281,3 @@ export default function DepositHistory() {
     </div>
   );
 }
-

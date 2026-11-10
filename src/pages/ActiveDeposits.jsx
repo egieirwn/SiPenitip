@@ -170,6 +170,14 @@ export default function ActiveDeposits() {
               <div className="deposit-card-items">
                 {tx.deposit_items?.map((item, i) => (
                   <div key={i} className="item-row">
+                    {item.photo_url && (
+                      <img
+                        className="deposit-item-photo deposit-item-photo--small"
+                        src={item.photo_url}
+                        alt={`Foto ${item.name}`}
+                        loading="lazy"
+                      />
+                    )}
                     <span className="item-name">{item.name}</span>
                     <span className="item-qty">×{item.quantity}</span>
                     {item.storage_locations && (
@@ -199,4 +207,3 @@ export default function ActiveDeposits() {
     </div>
   );
 }
-

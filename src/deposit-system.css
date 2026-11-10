@@ -1208,6 +1208,63 @@
 .item-qty { color: var(--color-text-muted); font-weight: 600; }
 .item-loc { display: flex; align-items: center; gap: 0.25rem; color: var(--color-primary); font-size: 0.75rem; font-weight: 600; }
 
+.deposit-item-photo {
+  display: block;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+}
+
+.deposit-item-photo--small {
+  width: 40px;
+  height: 40px;
+}
+
+.deposit-history-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 0.75rem;
+}
+
+.deposit-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.deposit-card-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.deposit-card-photo {
+  width: 150px;
+  margin: 0;
+}
+
+.deposit-card-photo img {
+  display: block;
+  width: 150px;
+  height: 120px;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.deposit-card-photo figcaption,
+.deposit-card-photos-empty {
+  margin: 0.375rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
 .deposit-card-footer {
   display: flex;
   align-items: center;

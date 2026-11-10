@@ -44,7 +44,7 @@ export default function DepositCard() {
           id, transaction_code, checkin_at, notes, status,
           visitors(full_name, institution, identity_number, visit_type),
           profiles!received_by(full_name),
-          deposit_items(id, name, quantity, initial_condition,
+          deposit_items(id, name, quantity, initial_condition, photo_url,
             item_categories(name),
             storage_locations(code, name)
           )
@@ -220,6 +220,24 @@ export default function DepositCard() {
         </div>
       </div>
 
+      <div className="card no-print" style={{ maxWidth: '760px', margin: '1.5rem auto 0' }}>
+        <div className="card-header">
+          <h3 className="card-title">Foto Barang</h3>
+        </div>
+        <div className="deposit-card-photos">
+          {transaction.deposit_items?.filter(item => item.photo_url).length ? (
+            transaction.deposit_items.filter(item => item.photo_url).map((item, i) => (
+              <figure className="deposit-card-photo" key={item.id || i}>
+                <img src={item.photo_url} alt={`Foto ${item.name}`} loading="lazy" />
+                <figcaption>{item.name}</figcaption>
+              </figure>
+            ))
+          ) : (
+            <p className="deposit-card-photos-empty">Belum ada foto barang pada transaksi ini.</p>
+          )}
+        </div>
+      </div>
+
       {/* Action Buttons */}
       <div className="no-print" style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
         <button className="btn btn-primary" onClick={handlePrint}>
@@ -235,4 +253,3 @@ export default function DepositCard() {
     </div>
   );
 }
-

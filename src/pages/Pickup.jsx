@@ -350,6 +350,14 @@ export default function Pickup() {
                   padding: '0.5rem 0.75rem', border: '1px solid var(--color-border)',
                   borderRadius: 'var(--radius-sm)', marginBottom: '0.375rem', fontSize: '0.875rem'
                 }}>
+                  {item.photo_url && (
+                    <img
+                      className="deposit-item-photo deposit-item-photo--small"
+                      src={item.photo_url}
+                      alt={`Foto ${item.name}`}
+                      loading="lazy"
+                    />
+                  )}
                   <div>
                     <strong>{item.name}</strong>
                     <span style={{ color: 'var(--color-text-muted)', marginLeft: '0.5rem' }}>×{item.quantity}</span>
@@ -563,4 +571,3 @@ export default function Pickup() {
     </div>
   );
 }
-
